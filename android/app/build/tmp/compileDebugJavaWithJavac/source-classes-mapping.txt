@@ -1,0 +1,14 @@
+com/receiptgenerator/MainApplication.java
+ com.receiptgenerator.MainApplication
+ com.receiptgenerator.MainApplication$1
+com/receiptgenerator/MainActivity.java
+ com.receiptgenerator.MainActivity
+com/receiptgenerator/BuildConfig.java
+ com.receiptgenerator.BuildConfig
+com/receiptgenerator/ReactNativeFlipper.java
+ com.receiptgenerator.ReactNativeFlipper
+ com.receiptgenerator.ReactNativeFlipper$1
+ com.receiptgenerator.ReactNativeFlipper$2
+ com.receiptgenerator.ReactNativeFlipper$2$1
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList
