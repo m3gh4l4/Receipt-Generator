@@ -10,5 +10,7 @@ com/receiptgenerator/ReactNativeFlipper.java
  com.receiptgenerator.ReactNativeFlipper$1
  com.receiptgenerator.ReactNativeFlipper$2
  com.receiptgenerator.ReactNativeFlipper$2$1
+com/receiptgenerator/SplashActivity.java
+ com.receiptgenerator.SplashActivity
 com/facebook/react/PackageList.java
  com.facebook.react.PackageList

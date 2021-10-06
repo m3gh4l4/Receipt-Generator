@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
-import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native'
+import { Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, BackHandler } from 'react-native'
 
 const EntryModal = (props) => {
 
@@ -21,7 +21,6 @@ const EntryModal = (props) => {
     const [err2,setErr2] = useState(false)
     const [err3,setErr3] = useState(false)
     
-    const[refresh,setRefresh] = useState(false)
     const resetStates = () => {
     
         setItemName("");
@@ -38,88 +37,39 @@ const EntryModal = (props) => {
     }
     
     useEffect(() => {
-        if(props.editId)
-        setRefresh(!refresh)
-        let id = props.editId
-        let mainArr = props.mainArr
-        if(props.editId!=-1){
-            let l = mainArr[id][1].length;
-            
-            console.log(id + "-----------")
-            setItemName(mainArr[id][1].slice(0,l-4))
-            setQuantity(mainArr[id][1].slice(l-2,l-1))
-            setPrice(String(mainArr[id][2]))
-            setDiscount(String(mainArr[id][3]))
-            setGst(String(mainArr[id][4]))
-            setSubTot(String(mainArr[id][4]))
-            setErr3(false)
-            setErr1(false)
-            setErr2(false)
-            setDone(false)
-            setCancel(false)
-            
-        }
-        else{
-            resetStates()
-        }
-    }, [cancel,done])
-    useEffect(() => {
-        
-    }, [refresh])
+        const backHandler = BackHandler.addEventListener('hardwareBackPress',() => true )
+        return () => false
+    }, [])
     const handleCancel = () => {
         props.hideModal();
         setCancel(true);
         setDone(false)
     }
     const handleDone = () => {
-        if(itemName == ""){
-            setErr1(true)
+        
+        setDone(true)
+        if(itemName!="" && quantity!="" && price!="" && discount!="" && gst!="" && subTot!="" && !isNaN(quantity) && !isNaN(price) 
+            &&!isNaN(discount) && !isNaN(gst) && !isNaN(subTot))
+        {
+            const quant =itemName+ " (" + quantity + ")";
+            let dupDisc = parseInt(discount,10)
+            let dupGST = parseInt(gst,10)
+            let dupQyt = parseInt(quantity)
+            let dupSubTot = parseInt(subTot)
+            const temp = [];
+            temp.push(quant);
+            temp.push(price);
+            temp.push(dupDisc);
+            temp.push(dupGST);
+            temp.push(dupSubTot)
+            setSubData(temp);
+    
+            props.updateData(temp)
+        
+            props.hideModal()
+            resetStates()
         }
-        else{
-            setErr1(false)
-            if(quantity==""){
-                setErr2(true)
-            }
-            else{
-                setErr2(false)
-                if(price == ""){
-                    setErr3(true)
-                }
-                else{
-                    setErr3(false)
-                    if(!isNaN(quantity) && !isNaN(price) && !isNaN(discount) && !isNaN(gst)){
-                        if(discount==""){
-                            setDiscount("0")
-                        }
-                        if(gst==""){
-                            setGst("0")
-                        }
-                        const quant =itemName+ " (" + quantity + ")";
-                        let dupDisc = discount=="" ? 0 : parseInt(discount,10)
-                        let dupGST = gst == "" ? 0 : parseInt(gst,10)
-                        const temp = [];
-                        temp.push(quant);
-                        temp.push(price);
-                        temp.push(dupDisc);
-                        temp.push(dupGST);
-                        setSubData(temp);
-                        
-                        let tot = parseInt(quantity,10) * parseInt(price,10) - dupDisc + dupGST;
-                        temp.push(tot);
-                        if(props.editId!=-1){
-                            props.editData(temp,props.editId)
-                        }
-                        else{
-                            props.updateData(temp,tot)
-                        }
-                        
-                        props.hideModal()
-                        resetStates()
-
-                    }
-                }
-            }
-        }
+                
     }
     return(
         <Modal
@@ -133,16 +83,23 @@ const EntryModal = (props) => {
                     <Text style={styles.heading}>Enter Item Detials</Text>
 
                     <TextInput  onChangeText={setItemName} value={itemName} placeholder="Item Name" style={styles.input}/>
-                    {err1 ? <Text style={styles.error}>Oops!! you forgot to enter Item name</Text> : null}
+                    {done && itemName=="" ? <Text style={styles.error}>Oops!! you forgot to enter Item name</Text> : null}
                     
                     <TextInput  placeholder="Quantity"  onChangeText={setQuantity} value={quantity} style={styles.input} keyboardType="numeric" />
-                    { err2 ? <Text style={styles.error}>Oops!! you forgot to enter quantity</Text> : isNaN(quantity) ? <Text style={styles.error}>Please enter a number</Text> : null}
+                    {done&& quantity=="" ? <Text style={styles.error}>Oops!! you forgot to enter quantity</Text> : isNaN(quantity) ? <Text style={styles.error}>Please enter a number</Text> : null}
+
                     <TextInput onChangeText={setPrice} value={price} placeholder="Price Per Quantity" style={styles.input} keyboardType="numeric" />
-                    {err3 ? <Text style={styles.error}>Oops!! you forgot to enter price per quantity</Text> : isNaN(price) ? <Text style={styles.error}>Please enter a number</Text> : null }
+                    {done&&price=="" ? <Text style={styles.error}>Oops!! you forgot to enter price per quantity</Text> : isNaN(price) ? <Text style={styles.error}>Please enter a number</Text> : null }
+
                     <TextInput onChangeText={setDiscount} value={discount} placeholder="Discount (excluding GST)" style={styles.input} keyboardType="numeric" />
-                    {isNaN(discount) ? <Text style={styles.error}>Please enter a number</Text> : null}
+                    {done && discount=="" ? <Text style={styles.error}>Oops!! you forgot to discount</Text>  : isNaN(discount) ? <Text style={styles.error}>Please enter a valid number</Text> : null}
+
                     <TextInput onChangeText={setGst} value={gst} placeholder="GST" style={styles.input} keyboardType="numeric" />
-                    {isNaN(gst) ? <Text style={styles.error}>Please enter a number</Text> : null}
+                    {done && gst=="" ? <Text style={styles.error}>Oops!! you forgot to enter GST</Text> : isNaN(gst) ? <Text style={styles.error}>Please enter a valid number</Text> : null}
+
+                    <TextInput onChangeText={setSubTot} value={subTot} placeholder="Total (including GST)" style={styles.input} keyboardType="numeric" />
+                    {done&&subTot=="" ? <Text style={styles.error}>Oops!! you forgot to enter Total</Text> : isNaN(subTot) ? <Text style={styles.error}>Please enter a valid number</Text> : null}
+
                     <View style={{flexDirection:'row',justifyContent:'space-evenly', alignItems:'center', }}>
                         <TouchableOpacity style={{justifyContent:'center', flexDirection:'row', marginTop:10 }} onPress={() => handleCancel()} activeOpacity={0.7}>
                             <View style={{alignSelf:'center', width:'60%'}}>

@@ -1,10 +1,17 @@
 import React from 'react'
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import {useEffect} from 'react'
+import { BackHandler, Image, StyleSheet, Text, TouchableOpacity, View, StatusBar } from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
+
 const Home = ({navigation}) => {
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => false
+    }, [])
     return(
         <View style={styles.container}>
+            <StatusBar hidden={true} />
             <LinearGradient
             useAngle={true}
             angle={45}

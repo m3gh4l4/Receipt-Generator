@@ -1,0 +1,11 @@
+com/receiptgenerator/MainApplication.java
+ com.receiptgenerator.MainApplication
+ com.receiptgenerator.MainApplication$1
+com/receiptgenerator/MainActivity.java
+ com.receiptgenerator.MainActivity
+com/receiptgenerator/BuildConfig.java
+ com.receiptgenerator.BuildConfig
+com/receiptgenerator/SplashActivity.java
+ com.receiptgenerator.SplashActivity
+com/facebook/react/PackageList.java
+ com.facebook.react.PackageList

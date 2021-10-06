@@ -93,6 +93,7 @@
     <color name="abc_search_url_text_selected">@android:color/black</color>
     <color name="accent_material_dark">@color/material_deep_teal_200</color>
     <color name="accent_material_light">@color/material_deep_teal_500</color>
+    <color name="app_bg">#FFFFFF</color>
     <color name="background_floating_material_dark">@color/material_grey_800</color>
     <color name="background_floating_material_light">@android:color/white</color>
     <color name="background_material_dark">@color/material_grey_850</color>
@@ -193,6 +194,7 @@
     <color name="secondary_text_default_material_light">#8a000000</color>
     <color name="secondary_text_disabled_material_dark">#36ffffff</color>
     <color name="secondary_text_disabled_material_light">#24000000</color>
+    <color name="splashscreen_bg">#FFFFFF</color>
     <color name="switch_thumb_disabled_material_dark">#ff616161</color>
     <color name="switch_thumb_disabled_material_light">#ffbdbdbd</color>
     <color name="switch_thumb_normal_material_dark">#ffbdbdbd</color>
@@ -824,9 +826,17 @@
     <item name="android:windowEnterAnimation">@anim/mtrl_bottom_sheet_slide_in</item>
     <item name="android:windowExitAnimation">@anim/mtrl_bottom_sheet_slide_out</item>
   </style>
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:textColor">#000000</item>
+
+        <!-- Add the following line to set the default status bar color for all the app. -->
+        <item name="android:statusBarColor">@color/app_bg</item>
+        <!-- Add the following line to set the default status bar text color for all the app 
+        to be a light color (false) or a dark color (true) -->
+        <item name="android:windowLightStatusBar">false</item>
+        <!-- Add the following line to set the default background color for all the app. -->
+        <item name="android:windowBackground">@color/app_bg</item>
     </style>
     <style name="Base.AlertDialog.AppCompat" parent="android:Widget">
         <item name="android:layout">@layout/abc_alert_dialog_material</item>
@@ -3012,6 +3022,10 @@
     </style>
     <style name="SpinnerDatePickerStyle" ns2:targetApi="lollipop" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:datePickerMode">spinner</item>
+    </style>
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/splashscreen_bg</item>
+        <item name="android:background">@drawable/background_splash</item>
     </style>
     <style name="Test.ShapeAppearanceOverlay.MaterialComponents.MaterialCalendar.Day" parent="">
     <item name="cornerFamily">rounded</item>

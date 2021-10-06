@@ -1,0 +1,7 @@
+#Wed Oct 06 18:54:00 IST 2021
+base.1=/home/m3gh4l4/Desktop/Internship/ReceiptGenerator/android/app/build/intermediates/dex/release/mergeDexRelease/classes2.dex
+path.1=classes2.dex
+base.0=/home/m3gh4l4/Desktop/Internship/ReceiptGenerator/android/app/build/intermediates/dex/release/mergeDexRelease/classes.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+path.0=classes.dex

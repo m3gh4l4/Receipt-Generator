@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, SafeAreaView,Button, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ScrollView, SafeAreaView,Button, Image,BackHandler } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import { Cell, Col, Row, Rows, Table, TableWrapper } from 'react-native-table-component';
@@ -10,81 +10,38 @@ const Form =  ({navigation}) => {
     const [name,setName] = useState("");
     const [phone,setPhone] = useState("");
     const [date, setDate] = useState(new Date())
+    const [istDate,setIstDate] = useState("DD/MM/YYYY")
+    const [time,setTime] = useState('hh:mm')
     const [open, setOpen] = useState(false)
     const [total,setTotal] = useState(0)
 
     const[itemName,setItemName] = useState("")
     const[totDisc,setTotDisc] = useState(0)
     const[totGST,setTotGST] = useState(0)
-
     const [mainArr,setMainArr] = useState([])
-    const [edit,setEdit] = useState(false)
-    const[editId,setEditId] = useState(-1)
-    
 
     const[openModal,setOpenModal] = useState(false)
     
     const [submit,setSubmit] = useState(false)
     const[err1,setErr1] = useState(false)
     const[err2,setErr2] = useState(false)
+    const[err3,setErr3] = useState(false)
     const[valid,setValid] = useState(false)
 
-    
-    const handleEdit = (id) => {
-
-        console.log("clicked edit button")
-        setEdit(true)
-        setEditId(id);
-        console.log(id +"   edit id " + editId);
-    }
-
     useEffect(() => {
-        if(editId!=-1 && edit===true){
-            console.log(editId) + "========"
-            setOpenModal(true)
-        }
-    }, [setEditId,edit])
-    const editData = (newData,id) => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => true)
+        return () => backHandler.remove()
+    }, [])
 
-        console.log("editing data")
-        let dupData = mainArr;
-        for(let i=0;i<5;i++){
-            dupData[id][i+1] = newData[i]
-            console.log(newData[i] + "....")
-        }
-        setMainArr(dupData)
-    }
-
-    const EditBtn = (id) => {        
-        return(
-            <TouchableOpacity onPress={() => handleEdit(id)}>
-                <View style={styles.editWrapper}>
-                    <Text style={styles.editText}>edit</Text>
-                </View>
-            </TouchableOpacity>
-        )
-    }
-    
-    const handleAddItem = () => {
-
-        console.log("clicked add item")
-        setEdit(false); 
-        setEditId(-1); 
-        setOpenModal(true);
-    }
-    
-    const updateData = (val,tot) => {
+    const updateData = (val) => {
 
         console.log("updating data")
 
         const id = [mainArr.length+1]
         val = id.concat(val)
-        // const newCol = [EditBtn(mainArr.length)]
-        // val = val.concat(newCol)
         setMainArr(oldArr => [...oldArr,val])
-        setTotal(total+tot)
+        setTotal(total+parseInt(val[5],10))
         setTotGST(totGST+val[3])
-        setTotDisc(totDisc+val[2])
     }
 
     useEffect(() => {
@@ -93,7 +50,9 @@ const Form =  ({navigation}) => {
         else{
             setValid(false)
         }
+        
     }, [phone])
+
     const onSubmit = () => {
         if(name == ""){
             setErr1(true)
@@ -110,21 +69,27 @@ const Form =  ({navigation}) => {
                 else{
                     setValid(false)
                     setErr2(false)
-                    navigation.navigate('Receipt', {
-                        data:mainArr,
-                        total:total,
-                        disc:totDisc,
-                        gst:totGST,
-                        name:name,
-                        phone:phone,
-                        date:JSON.stringify(date)
-                    })
+                    if(istDate=='DD/MM/YYYY'){
+                        setErr3(true)
+                    }
+                    else{
+                        setErr3(false)
+                        navigation.navigate('Receipt', {
+                            data:mainArr,
+                            total:total,
+                            gst:totGST,
+                            name:name,
+                            phone:phone,
+                            time:time,
+                            date : istDate
+                        })
+                    }
                 }
             }
         }
     }
 
-    let titleRow = ["Id", "Item Name", "Price Per Quant.", "Disc.", "GST", "Total",""]
+    let titleRow = ["Id", "Item Name", "Price Per Qyt", "Disc.", "GST", "Total"]
     return(
         <SafeAreaView style={styles.container}>
             <Text style={styles.heading}>Enter the details</Text>
@@ -133,14 +98,14 @@ const Form =  ({navigation}) => {
                 <View style={styles.labelWrapper}>
                     <Text style={styles.label}>Full Name</Text>
                 </View>
-                <TextInput style={styles.input} onChangeText={setName} value={name} placeholder="" />
+                <TextInput style={styles.input} onChangeText={setName} value={name} placeholder="" maxLength={30} />
             </View>
             {err1 ? <Text style={styles.error}>Oops!! you forgot to enter name</Text> : null}
             <View style={styles.inputWrapper}>
                 <View style={styles.labelWrapper}>
                     <Text style={styles.label}>Contact Number</Text>
                 </View>
-                <TextInput style={styles.input} onChangeText={setPhone} value={phone} placeholder="" keyboardType={'numeric'} />
+                <TextInput style={styles.input} onChangeText={setPhone} value={phone} placeholder="" keyboardType={'numeric'}  />
             </View>
             {err2 ? <Text style={styles.error}>Oops!! you forgot to enter phone number</Text> : valid ? <Text style={styles.error}>Please enter a valid phone number</Text> : null}
 
@@ -160,6 +125,31 @@ const Form =  ({navigation}) => {
                     onDateChange={setDate}
                     onConfirm={(date) => {
                         setOpen(false)
+                        let temp = new Date(date).toLocaleString(undefined, {timeZone:'Asia/Kolkata'})
+                        if(temp[11]!=' '){
+                            setTime(temp.slice(11,16))
+                        }else{
+                            setTime(temp.slice(12,17))
+                        }
+                        let l = temp.length
+
+                        let finalDate = ""
+                        // day
+                        if(temp[8] == ' ')
+                            finalDate = '0'+finalDate + temp[9]+'/'
+                        else
+                            finalDate = finalDate + temp.slice(8,10) + '/'
+                        // month
+                        let month = temp.slice(4,7)
+                        month == 'Jan' ? month = '01' : month == 'Feb' ? month = '02' : month == 'Mar' ? month = "03" : month == 'Apr' ? month='04' : 
+                        month == 'May' ? month = '05' : month == 'Jun' ? month = '06' : month == 'Jul' ? month = '07' : month == 'Aug' ? month = '08':
+                        month == 'Sep' ? month = '09' : month == 'Oct' ? month = '10' : month == 'Nov' ? month = '11' : month = '12'
+                        finalDate = finalDate + month + '/'
+                        // year
+                        finalDate = finalDate+temp.slice(l-4,l)
+                        
+                        setIstDate(finalDate)
+                        console.log(finalDate)
                         setDate(date)
                     }}
                     onCancel={()=>{
@@ -167,21 +157,23 @@ const Form =  ({navigation}) => {
                     }}
                 />
                 <View style={styles.date}>
-                    <Text>{JSON.stringify(date).slice(1,5)}/{JSON.stringify(date).slice(6,8)}/{JSON.stringify(date).slice(9,11)}</Text>
+                    <Text style={{fontSize:12}}>{istDate}</Text>
                 </View>
                 <View style={styles.date}> 
-                    <Text>{ JSON.stringify(date).slice(12,17)}</Text>
+                    <Text style={{fontSize:12}}>{time}</Text>
                 </View>
+
             </View>
+            {err3 ? <Text style={styles.error}>Oops!! you forgot to enter Date and Time</Text> : null}
 
             <View style={{flexDirection:'row',justifyContent:'space-around',  width:'100%',paddingVertical:10}}>
-                <TouchableOpacity style={{width:'40%'}} onPress={() =>handleAddItem()} activeOpacity={0.6}>
+                <TouchableOpacity style={{width:'40%'}} onPress={() => setOpenModal(true)} activeOpacity={0.6}>
                     <View >
                         <Text style={styles.addItem}>+ Add an Item</Text>
                     </View>
                 </TouchableOpacity>
                 <View style={{width:'40%'}}>
-                    <Text style={styles.addItem}>Total : {total}</Text>
+                    <Text style={styles.addItem}>Total : {total.toString().replace(/\B(?=(?:(\d\d)+(\d)(?!\d))+(?!\d))/g, ',')}</Text>
                 </View>
             </View>
                 
@@ -202,7 +194,7 @@ const Form =  ({navigation}) => {
                 </View>
             </TouchableOpacity>
             
-            <EntryModal open={openModal} hideModal={() => setOpenModal(false)} updateData={updateData} editData={editData} editId = {editId} mainArr={mainArr} edit={edit}  />
+            <EntryModal open={openModal} hideModal={() => setOpenModal(false)} updateData={updateData} mainArr={mainArr} />
 
         </SafeAreaView>
     )
@@ -212,15 +204,16 @@ const styles = StyleSheet.create({
     container:{
         width:'100%',
         height:'100%',
-        paddingHorizontal:10,
-        backgroundColor:'#F6F6F6'
+        backgroundColor:'#F6F6F6',
+        padding:10
     },
     heading:{
         fontFamily: 'SF Pro Display',
         fontWeight:'bold',
-        fontSize:22,
+        fontSize:16,
         padding:2,
         textAlign:'center',
+        fontStyle:'italic'
     },
     inputWrapper:{
         flexDirection:'row',
@@ -266,7 +259,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         padding:5,
         fontFamily: 'SF Pro Display',
-		fontSize: 12,
+		fontSize: 10,
         borderRadius:8,
         borderWidth:1.5,
         borderColor:"#A8A8A8",
@@ -278,7 +271,8 @@ const styles = StyleSheet.create({
         padding:5,
         backgroundColor:'#5D8EA9',
         textAlign:'center',
-        opacity:0.9
+        opacity:0.9,
+        fontSize:12
     },
     error:{
         fontFamily: 'SF Pro Display',
@@ -286,18 +280,7 @@ const styles = StyleSheet.create({
         color:'red',
         textAlign:'center'
     },
-    editWrapper:{
-        alignSelf:'center'
-    },
-    editText:{
-        backgroundColor:'#5D8EA9',
-        fontSize:10,
-        borderRadius:5,
-        paddingHorizontal:5,
-        width:'100%',
-        color:'white'
-        
-    }
+    
 })
 
 export default Form;
