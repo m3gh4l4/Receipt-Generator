@@ -1,5 +1,5 @@
 # ReceiptGenerator
-This React Native app helps sotre owners generate receipts online.
+This React Native app helps store owners generate receipts online.
 One can customize the receipt specific to thte customer they are sending it to. They can add shop info(name, address, contact details), add customer details and as many items the customer buys along with the details of each item such as quantity, price per quantity, discount, GST.
 
 ## HOME PAGE
