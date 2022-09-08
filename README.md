@@ -28,3 +28,8 @@ It also has two buttons floating in the bottom right corner which are dedicated 
 
 
 ![Receipt](img5.png)
+
+Here is a small demo of the app.
+https://user-images.githubusercontent.com/63804116/189122370-4ae0842d-a90a-4c37-882a-a0c28ee03456.mp4
+
+
